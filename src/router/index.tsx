@@ -2,31 +2,45 @@
 // React Router — Uygulama yönlendirme yapılandırması
 // ──────────────────────────────────────────────
 
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter } from "react-router-dom";
 
 // Layout
-import MainLayout from '../layouts/MainLayout';
+import MainLayout from "../layouts/MainLayout";
 
 // Pages
-import LoginPage from '../pages/Login/LoginPage';
-import DashboardPage from '../pages/Dashboard/DashboardPage';
-import UnauthorizedPage from '../pages/Unauthorized/UnauthorizedPage';
-import OgrencilerPage from '../pages/Ogrenciler/OgrencilerPage';
-import EtkinliklerPage from '../pages/Etkinlikler/EtkinliklerPage';
-import DuyurularPage from '../pages/Duyurular/DuyurularPage';
-import IzinlerPage from '../pages/Izinler/IzinlerPage';
+import LoginPage from "../pages/Login/LoginPage";
+import DashboardPage from "../pages/Dashboard/DashboardPage";
+import UnauthorizedPage from "../pages/Unauthorized/UnauthorizedPage";
+import OgrencilerPage from "../pages/Ogrenciler/OgrencilerPage";
+import EtkinliklerPage from "../pages/Etkinlikler/EtkinliklerPage";
+import DuyurularPage from "../pages/Duyurular/DuyurularPage";
+import DuyuruYonetimiPage from "../pages/Duyurular/DuyuruYonetimiPage";
+import IzinlerPage from "../pages/Izinler/IzinlerPage";
+import YemekMenuPage from "../pages/YemekMenu/YemekMenuPage";
+import YemekTanimlariPage from "../pages/YemekTanimlari/YemekTanimlariPage";
+import GunlukYoklamalarPage from "../pages/Yoklamalar/GunlukYoklamalarPage";
+import SohbetYoklamalariPage from "../pages/Yoklamalar/SohbetYoklamalariPage";
+import SohbetGruplariPage from "../pages/SohbetGruplari/SohbetGruplariPage";
+import SohbetGrubuDetayPage from "../pages/SohbetGruplari/SohbetGrubuDetayPage";
+import OdaYonetimiPage from "../pages/OdaYonetimi/OdaYonetimiPage";
+import SikayetlerPage from "../pages/Sikayetler/SikayetlerPage";
+import MaliIslemlerPage from "../pages/MaliIslemler/MaliIslemlerPage";
+import FinansDashboardPage from "../pages/FinansDashboard/FinansDashboardPage";
+import EtkinlikYonetimiPage from "../pages/EtkinlikYonetimi/EtkinlikYonetimiPage";
+import NobetYonetimiPage from "../pages/NobetYonetimi/NobetYonetimiPage";
+import NobetlerimPage from "../pages/Nobetlerim/NobetlerimPage";
 
 // Components
-import ProtectedRoute from '../components/ProtectedRoute/ProtectedRoute';
+import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
 
 const router = createBrowserRouter([
   // ─── Public Routes ───
   {
-    path: '/login',
+    path: "/login",
     element: <LoginPage />,
   },
   {
-    path: '/yetkisiz',
+    path: "/yetkisiz",
     element: <UnauthorizedPage />,
   },
 
@@ -38,20 +52,36 @@ const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           {
-            path: '/dashboard',
+            path: "/dashboard",
             element: <DashboardPage />,
           },
           {
-            path: '/etkinlikler',
+            path: "/etkinlikler",
             element: <EtkinliklerPage />,
           },
           {
-            path: '/duyurular',
+            path: "/duyurular",
             element: <DuyurularPage />,
           },
           {
-            path: '/izinler',
+            path: "/izinler",
             element: <IzinlerPage />,
+          },
+          {
+            path: "/yemek-menu",
+            element: <YemekMenuPage />,
+          },
+          {
+            path: "/sikayetler",
+            element: <SikayetlerPage />,
+          },
+          {
+            path: "/nobetlerim",
+            element: <NobetlerimPage />,
+          },
+          {
+            path: "/finans-dashboard",
+            element: <FinansDashboardPage />,
           },
         ],
       },
@@ -60,14 +90,54 @@ const router = createBrowserRouter([
 
   // ─── Admin/Personel Only Routes ───
   {
-    element: <ProtectedRoute allowedRoles={['Admin', 'Personel']} />,
+    element: <ProtectedRoute allowedRoles={["Admin", "Personel"]} />,
     children: [
       {
         element: <MainLayout />,
         children: [
           {
-            path: '/ogrenciler',
+            path: "/ogrenciler",
             element: <OgrencilerPage />,
+          },
+          {
+            path: "/yemek-tanimlari",
+            element: <YemekTanimlariPage />,
+          },
+          {
+            path: "/yoklamalar/gunluk",
+            element: <GunlukYoklamalarPage />,
+          },
+          {
+            path: "/yoklamalar/sohbet",
+            element: <SohbetYoklamalariPage />,
+          },
+          {
+            path: "/sohbet-gruplari",
+            element: <SohbetGruplariPage />,
+          },
+          {
+            path: "/sohbet-gruplari/:id",
+            element: <SohbetGrubuDetayPage />,
+          },
+          {
+            path: "/oda-yonetimi",
+            element: <OdaYonetimiPage />,
+          },
+          {
+            path: "/etkinlik-yonetimi",
+            element: <EtkinlikYonetimiPage />,
+          },
+          {
+            path: "/duyuru-yonetimi",
+            element: <DuyuruYonetimiPage />,
+          },
+          {
+            path: "/nobet-yonetimi",
+            element: <NobetYonetimiPage />,
+          },
+          {
+            path: "/mali-islemler",
+            element: <MaliIslemlerPage />,
           },
         ],
       },
@@ -76,7 +146,7 @@ const router = createBrowserRouter([
 
   // ─── Catch-all: bilinmeyen route → login'e yönlendir ───
   {
-    path: '*',
+    path: "*",
     element: <LoginPage />,
   },
 ]);

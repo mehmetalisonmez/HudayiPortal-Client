@@ -2,18 +2,17 @@
 // Duyuru API Servisi — CRUD işlemleri
 // ──────────────────────────────────────────────
 
-import api from './axiosInstance';
-import { API } from './endpoints';
-import type { DuyuruDto, CreateDuyuruRequest, UpdateDuyuruRequest } from '../types';
+import api from "./axiosInstance";
+import { API } from "./endpoints";
+import type {
+  DuyuruDto,
+  CreateDuyuruRequest,
+  UpdateDuyuruRequest,
+} from "../types";
 
 export const duyuruService = {
-  /** Aktif duyuruları listeler (öğrenci görünümü) */
-  getAktifDuyurular: () =>
-    api.get<DuyuruDto[]>(API.DUYURU.AKTIF),
-
-  /** Tüm duyuruları listeler — süresi dolmuş dahil (admin görünümü) */
-  getAll: () =>
-    api.get<DuyuruDto[]>(API.DUYURU.LIST),
+  /** Tüm duyuruları listeler — backend rol tabanlı filtreler */
+  getAll: () => api.get<DuyuruDto[]>(API.DUYURU.LIST),
 
   /** Yeni duyuru oluşturur */
   create: (data: CreateDuyuruRequest) =>
@@ -24,6 +23,5 @@ export const duyuruService = {
     api.put<void>(API.DUYURU.UPDATE(id), data),
 
   /** Duyuruyu siler (soft delete) */
-  delete: (id: number) =>
-    api.delete<void>(API.DUYURU.DELETE(id)),
+  delete: (id: number) => api.delete<void>(API.DUYURU.DELETE(id)),
 };

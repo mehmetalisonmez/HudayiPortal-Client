@@ -5,7 +5,8 @@
 // Bölüm başlıkları, rol bazlı filtreleme, glow efekti
 // ──────────────────────────────────────────────
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Drawer,
@@ -19,25 +20,38 @@ import {
   Tooltip,
   alpha,
   IconButton,
-} from '@mui/material';
+  Collapse,
+} from "@mui/material";
 import {
   DashboardOutlined,
   PeopleOutlined,
   EventOutlined,
   CampaignOutlined,
   EventBusyOutlined,
+  EventNoteOutlined,
   AccountBalanceWalletOutlined,
+  BarChartOutlined,
   ReportProblemOutlined,
   FactCheckOutlined,
   RestaurantMenuOutlined,
+  SetMealOutlined,
   SecurityOutlined,
   ChatOutlined,
   SchoolOutlined,
+  GroupsOutlined,
+  MeetingRoomOutlined,
   LogoutOutlined,
   ChevronLeftOutlined,
   ChevronRightOutlined,
-} from '@mui/icons-material';
-import { useAuth } from '../hooks/useAuth';
+  NightlightOutlined,
+  ExpandLess,
+  ExpandMore,
+  CalendarMonthOutlined,
+  ForumOutlined,
+  LocalDiningOutlined,
+  BusinessCenterOutlined,
+} from "@mui/icons-material";
+import { useAuth } from "../hooks/useAuth";
 
 /** Sidebar tam genişliği */
 export const SIDEBAR_WIDTH = 260;
@@ -55,9 +69,10 @@ interface SidebarProps {
 
 interface NavItem {
   label: string;
-  path: string;
+  path?: string;
   icon: React.ReactNode;
-  roles?: string[]; // Boşsa herkese açık
+  roles?: string[];
+  children?: NavItem[];
 }
 
 interface NavSection {
@@ -67,105 +82,189 @@ interface NavSection {
 
 const navSections: NavSection[] = [
   {
-    title: 'ANA MENÜ',
+    title: "ANA MENÜ",
     items: [
       {
-        label: 'Dashboard',
-        path: '/dashboard',
+        label: "Dashboard",
+        path: "/dashboard",
         icon: <DashboardOutlined />,
       },
       {
-        label: 'Öğrenciler',
-        path: '/ogrenciler',
+        label: "Öğrenciler",
+        path: "/ogrenciler",
         icon: <PeopleOutlined />,
-        roles: ['Admin', 'Personel'],
+        roles: ["Admin", "Personel"],
       },
     ],
   },
   {
-    title: 'İÇERİK YÖNETİMİ',
+    title: "İÇERİK YÖNETİMİ",
     items: [
       {
-        label: 'Etkinlikler',
-        path: '/etkinlikler',
-        icon: <EventOutlined />,
+        label: "İletişim & Sosyal",
+        icon: <ForumOutlined />,
+        children: [
+          {
+            label: "Duyurular",
+            path: "/duyurular",
+            icon: <CampaignOutlined />,
+          },
+          {
+            label: "Duyuru Yönetimi",
+            path: "/duyuru-yonetimi",
+            icon: <CampaignOutlined />,
+            roles: ["Admin", "Personel"],
+          },
+          {
+            label: "Etkinlikler",
+            path: "/etkinlikler",
+            icon: <EventOutlined />,
+          },
+          {
+            label: "Etkinlik Yönetimi",
+            path: "/etkinlik-yonetimi",
+            icon: <EventNoteOutlined />,
+            roles: ["Admin", "Personel"],
+          },
+        ],
       },
       {
-        label: 'Duyurular',
-        path: '/duyurular',
-        icon: <CampaignOutlined />,
-      },
-      {
-        label: 'Yemek Menüsü',
-        path: '/yemek-menu',
-        icon: <RestaurantMenuOutlined />,
+        label: "Mutfak",
+        icon: <LocalDiningOutlined />,
+        children: [
+          {
+            label: "Yemek Menüsü",
+            path: "/yemek-menu",
+            icon: <RestaurantMenuOutlined />,
+          },
+          {
+            label: "Yemek Tanımları",
+            path: "/yemek-tanimlari",
+            icon: <SetMealOutlined />,
+            roles: ["Admin", "Personel"],
+          },
+        ],
       },
     ],
   },
   {
-    title: 'YÖNETİM',
+    title: "YÖNETİM",
     items: [
       {
-        label: 'İzin Talepleri',
-        path: '/izinler',
-        icon: <EventBusyOutlined />,
+        label: "Yönetim & Finans",
+        icon: <BusinessCenterOutlined />,
+        children: [
+          {
+            label: "İzin Talepleri",
+            path: "/izinler",
+            icon: <EventBusyOutlined />,
+          },
+          {
+            label: "Finans Dashboard",
+            path: "/finans-dashboard",
+            icon: <BarChartOutlined />,
+            roles: ["Admin"],
+          },
+          {
+            label: "Mali İşlemler",
+            path: "/mali-islemler",
+            icon: <AccountBalanceWalletOutlined />,
+            roles: ["Admin", "Personel"],
+          },
+        ],
       },
       {
-        label: 'Mali İşlemler',
-        path: '/mali-islemler',
-        icon: <AccountBalanceWalletOutlined />,
-        roles: ['Admin', 'Personel'],
-      },
-      {
-        label: 'Şikâyetler',
-        path: '/sikayetler',
+        label: "Şikâyetler",
+        path: "/sikayetler",
         icon: <ReportProblemOutlined />,
       },
       {
-        label: 'Yoklama',
-        path: '/yoklama',
+        label: "Yoklama İşlemleri",
         icon: <FactCheckOutlined />,
-        roles: ['Admin', 'Personel'],
+        roles: ["Admin", "Personel"],
+        children: [
+          {
+            label: "Günlük Yoklamalar",
+            path: "/yoklamalar/gunluk",
+            icon: <NightlightOutlined />,
+            roles: ["Admin", "Personel"],
+          },
+          {
+            label: "Sohbet Yoklamaları",
+            path: "/yoklamalar/sohbet",
+            icon: <SchoolOutlined />,
+            roles: ["Admin", "Personel"],
+          },
+        ],
       },
       {
-        label: 'Personel Nöbet',
-        path: '/personel-nobet',
+        label: "Nöbet Yönetimi",
+        path: "/nobet-yonetimi",
+        icon: <CalendarMonthOutlined />,
+        roles: ["Admin"],
+      },
+      {
+        label: "Nöbetlerim",
+        path: "/nobetlerim",
         icon: <SecurityOutlined />,
-        roles: ['Admin', 'Personel'],
+        roles: ["Admin", "Personel"],
+      },
+      {
+        label: "Sohbet Grupları",
+        path: "/sohbet-gruplari",
+        icon: <GroupsOutlined />,
+        roles: ["Admin", "Personel"],
+      },
+      {
+        label: "Oda Yönetimi",
+        path: "/oda-yonetimi",
+        icon: <MeetingRoomOutlined />,
+        roles: ["Admin", "Personel"],
       },
     ],
   },
   {
-    title: 'İLETİŞİM',
+    title: "İLETİŞİM",
     items: [
       {
-        label: 'Mesajlar',
-        path: '/mesajlar',
+        label: "Mesajlar",
+        path: "/mesajlar",
         icon: <ChatOutlined />,
       },
     ],
   },
 ];
 
-const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: SidebarProps) => {
+const Sidebar = ({
+  mobileOpen,
+  onMobileClose,
+  desktopOpen,
+  onDesktopToggle,
+}: SidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { role, user, logout } = useAuth();
 
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+
+  const handleToggleMenu = (label: string) => {
+    setOpenMenus((prev) => ({ ...prev, [label]: !prev[label] }));
+  };
+
   const handleLogout = () => {
     logout();
-    navigate('/login', { replace: true });
+    navigate("/login", { replace: true });
   };
 
   // Bölüm içindeki menü öğelerini kullanıcının rolüne göre filtrele
-  const getVisibleItems = (items: NavItem[]) =>
+  const getVisibleItems = (items: NavItem[]): NavItem[] =>
     items.filter((item) => !item.roles || (role && item.roles.includes(role)));
 
-  const displayName = user?.name || 'Kullanıcı';
-  const displayEmail = user?.email || '';
+  const displayName = user?.name || "Kullanıcı";
+  const displayEmail = user?.email || "";
 
   /** Geçiş süresi (ms) */
-  const transitionDuration = '0.25s';
+  const transitionDuration = "0.25s";
 
   /** Desktop sidebar'ın mevcut genişliği */
   const currentWidth = desktopOpen ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
@@ -174,17 +273,24 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
   // Drawer İç İçerik
   // ────────────────────────────────────────
   const drawerContent = (collapsed: boolean) => (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        overflow: "hidden",
+      }}
+    >
       {/* ─── Logo / Başlık ─── */}
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
+          display: "flex",
+          alignItems: "center",
           gap: collapsed ? 0 : 1.5,
           px: collapsed ? 0 : 2.5,
           py: 2.5,
           minHeight: 64,
-          justifyContent: collapsed ? 'center' : 'flex-start',
+          justifyContent: collapsed ? "center" : "flex-start",
           transition: `all ${transitionDuration} ease`,
         }}
       >
@@ -192,43 +298,57 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
           sx={{
             width: 42,
             height: 42,
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, #6366F1, #06B6D4)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            borderRadius: "12px",
+            background: "linear-gradient(135deg, #6366F1, #06B6D4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             flexShrink: 0,
-            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
-            animation: 'pulse 4s ease-in-out infinite',
+            boxShadow: "0 4px 12px rgba(99, 102, 241, 0.3)",
+            animation: "pulse 4s ease-in-out infinite",
           }}
         >
-          <SchoolOutlined sx={{ fontSize: 22, color: '#fff' }} />
+          <SchoolOutlined sx={{ fontSize: 22, color: "#fff" }} />
         </Box>
         {!collapsed && (
-          <Box sx={{ animation: 'fadeIn 0.2s ease-out', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+          <Box
+            sx={{
+              animation: "fadeIn 0.2s ease-out",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: 700, lineHeight: 1.2 }}
+            >
               Hüdayi
             </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontSize: "0.7rem" }}
+            >
               Yurt Yönetim Sistemi
             </Typography>
           </Box>
         )}
       </Box>
 
-      <Divider sx={{ borderColor: (t) => alpha(t.palette.text.secondary, 0.08) }} />
+      <Divider
+        sx={{ borderColor: (t) => alpha(t.palette.text.secondary, 0.08) }}
+      />
 
       {/* ─── Navigasyon Menüsü ─── */}
       <Box
         sx={{
           flex: 1,
-          overflowY: 'auto',
-          overflowX: 'hidden',
+          overflowY: "auto",
+          overflowX: "hidden",
           py: 1,
           // Özel scrollbar
-          '&::-webkit-scrollbar': { width: 4 },
-          '&::-webkit-scrollbar-track': { background: 'transparent' },
-          '&::-webkit-scrollbar-thumb': {
+          "&::-webkit-scrollbar": { width: 4 },
+          "&::-webkit-scrollbar-track": { background: "transparent" },
+          "&::-webkit-scrollbar-thumb": {
             background: (t) => alpha(t.palette.text.secondary, 0.15),
             borderRadius: 2,
           },
@@ -248,14 +368,14 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
                     px: 2.5,
                     pt: 2,
                     pb: 0.5,
-                    display: 'block',
-                    fontSize: '0.65rem',
+                    display: "block",
+                    fontSize: "0.65rem",
                     fontWeight: 700,
-                    color: 'text.secondary',
-                    letterSpacing: '0.1em',
+                    color: "text.secondary",
+                    letterSpacing: "0.1em",
                     opacity: 0.7,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
                   }}
                 >
                   {section.title}
@@ -275,39 +395,174 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
 
               <List sx={{ px: collapsed ? 0.5 : 1, py: 0 }}>
                 {visibleItems.map((item) => {
+                  // ── Accordion (children varsa) ──
+                  if (item.children && item.children.length > 0) {
+                    const childItems = getVisibleItems(item.children);
+                    if (childItems.length === 0) return null;
+                    const isChildActive = childItems.some(
+                      (c) => location.pathname === c.path,
+                    );
+                    const isOpen = openMenus[item.label] ?? isChildActive;
+
+                    return (
+                      <Box key={item.label}>
+                        <Tooltip
+                          title={collapsed ? item.label : ""}
+                          placement="right"
+                          arrow
+                        >
+                          <ListItemButton
+                            onClick={() => handleToggleMenu(item.label)}
+                            sx={{
+                              mb: 0.3,
+                              justifyContent: collapsed
+                                ? "center"
+                                : "flex-start",
+                              px: collapsed ? 1 : 2,
+                              minHeight: 44,
+                              "& .MuiListItemIcon-root": {
+                                color: isChildActive
+                                  ? "primary.main"
+                                  : "text.secondary",
+                                minWidth: collapsed ? 0 : 40,
+                                mr: collapsed ? 0 : 1,
+                              },
+                            }}
+                          >
+                            <ListItemIcon>{item.icon}</ListItemIcon>
+                            {!collapsed && (
+                              <>
+                                <ListItemText
+                                  primary={item.label}
+                                  primaryTypographyProps={{
+                                    fontSize: "0.855rem",
+                                    fontWeight: isChildActive ? 600 : 400,
+                                    color: isChildActive
+                                      ? "primary.main"
+                                      : "text.primary",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                />
+                                {isOpen ? (
+                                  <ExpandLess
+                                    sx={{
+                                      fontSize: 18,
+                                      color: "text.secondary",
+                                    }}
+                                  />
+                                ) : (
+                                  <ExpandMore
+                                    sx={{
+                                      fontSize: 18,
+                                      color: "text.secondary",
+                                    }}
+                                  />
+                                )}
+                              </>
+                            )}
+                          </ListItemButton>
+                        </Tooltip>
+                        {!collapsed && (
+                          <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                              {childItems.map((child) => {
+                                const isActive =
+                                  location.pathname === child.path;
+                                return (
+                                  <ListItemButton
+                                    key={child.path}
+                                    selected={isActive}
+                                    onClick={() => {
+                                      navigate(child.path!);
+                                      onMobileClose();
+                                    }}
+                                    sx={{
+                                      mb: 0.3,
+                                      pl: 4.5,
+                                      minHeight: 40,
+                                      position: "relative",
+                                      transition: "all 0.2s ease",
+                                      "& .MuiListItemIcon-root": {
+                                        color: isActive
+                                          ? "primary.main"
+                                          : "text.secondary",
+                                        minWidth: 34,
+                                        mr: 0.5,
+                                      },
+                                      ...(isActive && {
+                                        animation:
+                                          "glow 3s ease-in-out infinite",
+                                      }),
+                                    }}
+                                  >
+                                    <ListItemIcon>{child.icon}</ListItemIcon>
+                                    <ListItemText
+                                      primary={child.label}
+                                      primaryTypographyProps={{
+                                        fontSize: "0.82rem",
+                                        fontWeight: isActive ? 600 : 400,
+                                        color: isActive
+                                          ? "primary.main"
+                                          : "text.primary",
+                                        whiteSpace: "nowrap",
+                                      }}
+                                    />
+                                    {isActive && (
+                                      <Box
+                                        sx={{
+                                          width: 3,
+                                          height: 20,
+                                          borderRadius: 2,
+                                          background:
+                                            "linear-gradient(180deg, #6366F1, #06B6D4)",
+                                          position: "absolute",
+                                          right: 8,
+                                        }}
+                                      />
+                                    )}
+                                  </ListItemButton>
+                                );
+                              })}
+                            </List>
+                          </Collapse>
+                        )}
+                      </Box>
+                    );
+                  }
+
+                  // ── Normal öğe (children yok) ──
                   const isActive = location.pathname === item.path;
                   return (
                     <Tooltip
                       key={item.path}
-                      title={collapsed ? item.label : ''}
+                      title={collapsed ? item.label : ""}
                       placement="right"
                       arrow
                     >
                       <ListItemButton
                         selected={isActive}
                         onClick={() => {
-                          navigate(item.path);
+                          navigate(item.path!);
                           onMobileClose();
                         }}
                         sx={{
                           mb: 0.3,
-                          position: 'relative',
+                          position: "relative",
                           transition: `all 0.2s ease`,
-                          justifyContent: collapsed ? 'center' : 'flex-start',
+                          justifyContent: collapsed ? "center" : "flex-start",
                           px: collapsed ? 1 : 2,
                           minHeight: 44,
-                          '& .MuiListItemIcon-root': {
-                            color: isActive ? 'primary.main' : 'text.secondary',
+                          "& .MuiListItemIcon-root": {
+                            color: isActive ? "primary.main" : "text.secondary",
                             minWidth: collapsed ? 0 : 40,
                             mr: collapsed ? 0 : 1,
-                            transition: 'color 0.2s ease',
+                            transition: "color 0.2s ease",
                           },
-                          '&:hover .MuiListItemIcon-root': {
-                            color: 'primary.light',
+                          "&:hover .MuiListItemIcon-root": {
+                            color: "primary.light",
                           },
-                          // Aktif öğe glow efekti
                           ...(isActive && {
-                            animation: 'glow 3s ease-in-out infinite',
+                            animation: "glow 3s ease-in-out infinite",
                           }),
                         }}
                       >
@@ -316,22 +571,22 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
                           <ListItemText
                             primary={item.label}
                             primaryTypographyProps={{
-                              fontSize: '0.855rem',
+                              fontSize: "0.855rem",
                               fontWeight: isActive ? 600 : 400,
-                              color: isActive ? 'primary.main' : 'text.primary',
-                              whiteSpace: 'nowrap',
+                              color: isActive ? "primary.main" : "text.primary",
+                              whiteSpace: "nowrap",
                             }}
                           />
                         )}
-                        {/* Aktif gösterge çubuğu */}
                         {isActive && (
                           <Box
                             sx={{
                               width: 3,
                               height: 24,
                               borderRadius: 2,
-                              background: 'linear-gradient(180deg, #6366F1, #06B6D4)',
-                              position: 'absolute',
+                              background:
+                                "linear-gradient(180deg, #6366F1, #06B6D4)",
+                              position: "absolute",
                               right: collapsed ? 4 : 8,
                             }}
                           />
@@ -347,14 +602,16 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
       </Box>
 
       {/* ─── Kullanıcı Bilgisi + Çıkış ─── */}
-      <Divider sx={{ borderColor: (t) => alpha(t.palette.text.secondary, 0.08) }} />
+      <Divider
+        sx={{ borderColor: (t) => alpha(t.palette.text.secondary, 0.08) }}
+      />
       <Box sx={{ p: collapsed ? 1 : 2 }}>
         {/* Kullanıcı bilgi kutusu */}
         {!collapsed ? (
           <Box
             sx={{
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
               gap: 1.5,
               p: 1.5,
               borderRadius: 2,
@@ -367,8 +624,8 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
               sx={{
                 width: 36,
                 height: 36,
-                background: 'linear-gradient(135deg, #6366F1, #06B6D4)',
-                fontSize: '0.85rem',
+                background: "linear-gradient(135deg, #6366F1, #06B6D4)",
+                fontSize: "0.85rem",
                 fontWeight: 600,
               }}
             >
@@ -379,11 +636,11 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
                 variant="body2"
                 sx={{
                   fontWeight: 600,
-                  fontSize: '0.82rem',
+                  fontSize: "0.82rem",
                   lineHeight: 1.2,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {displayName}
@@ -391,12 +648,12 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
               <Typography
                 variant="caption"
                 sx={{
-                  color: 'text.secondary',
-                  fontSize: '0.68rem',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  display: 'block',
+                  color: "text.secondary",
+                  fontSize: "0.68rem",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  display: "block",
                 }}
               >
                 {displayEmail}
@@ -405,14 +662,14 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
           </Box>
         ) : (
           /* Collapsed modda sadece avatar göster */
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1.5 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 1.5 }}>
             <Tooltip title={displayName} placement="right" arrow>
               <Avatar
                 sx={{
                   width: 36,
                   height: 36,
-                  background: 'linear-gradient(135deg, #6366F1, #06B6D4)',
-                  fontSize: '0.85rem',
+                  background: "linear-gradient(135deg, #6366F1, #06B6D4)",
+                  fontSize: "0.85rem",
                   fontWeight: 600,
                 }}
               >
@@ -429,37 +686,37 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
             sx={{
               borderRadius: 2,
               py: 1,
-              color: 'text.secondary',
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                color: 'error.main',
+              color: "text.secondary",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                color: "error.main",
                 backgroundColor: (t) => alpha(t.palette.error.main, 0.08),
               },
             }}
           >
             <ListItemIcon sx={{ minWidth: 36 }}>
-              <LogoutOutlined sx={{ fontSize: 20, color: 'inherit' }} />
+              <LogoutOutlined sx={{ fontSize: 20, color: "inherit" }} />
             </ListItemIcon>
             <ListItemText
               primary="Çıkış Yap"
               primaryTypographyProps={{
-                fontSize: '0.83rem',
+                fontSize: "0.83rem",
                 fontWeight: 500,
               }}
             />
           </ListItemButton>
         ) : (
           /* Collapsed modda sadece ikon buton */
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Tooltip title="Çıkış Yap" placement="right" arrow>
               <IconButton
                 onClick={handleLogout}
                 size="small"
                 sx={{
-                  color: 'text.secondary',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    color: 'error.main',
+                  color: "text.secondary",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    color: "error.main",
                     backgroundColor: (t) => alpha(t.palette.error.main, 0.08),
                   },
                 }}
@@ -472,24 +729,30 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
       </Box>
 
       {/* ─── Collapse Toggle Butonu (sadece desktop drawer'da) ─── */}
-      <Divider sx={{ borderColor: (t) => alpha(t.palette.text.secondary, 0.08) }} />
+      <Divider
+        sx={{ borderColor: (t) => alpha(t.palette.text.secondary, 0.08) }}
+      />
       <Box
         sx={{
-          display: { xs: 'none', lg: 'flex' },
-          justifyContent: collapsed ? 'center' : 'flex-end',
+          display: { xs: "none", lg: "flex" },
+          justifyContent: collapsed ? "center" : "flex-end",
           p: 1,
         }}
       >
-        <Tooltip title={collapsed ? 'Menüyü Genişlet' : 'Menüyü Daralt'} placement="right" arrow>
+        <Tooltip
+          title={collapsed ? "Menüyü Genişlet" : "Menüyü Daralt"}
+          placement="right"
+          arrow
+        >
           <IconButton
             id="sidebar-toggle-desktop"
             onClick={onDesktopToggle}
             size="small"
             sx={{
-              color: 'text.secondary',
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                color: 'primary.main',
+              color: "text.secondary",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                color: "primary.main",
                 backgroundColor: (t) => alpha(t.palette.primary.main, 0.1),
               },
             }}
@@ -505,8 +768,11 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
 
       {/* ─── Versiyon Bilgisi ─── */}
       {!collapsed && (
-        <Box sx={{ px: 2.5, pb: 2, textAlign: 'center' }}>
-          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', opacity: 0.6 }}>
+        <Box sx={{ px: 2.5, pb: 2, textAlign: "center" }}>
+          <Typography
+            variant="caption"
+            sx={{ color: "text.secondary", fontSize: "0.65rem", opacity: 0.6 }}
+          >
             v1.0.0 — © 2026 Hüdayi Vakfı
           </Typography>
         </Box>
@@ -523,8 +789,8 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
         onClose={onMobileClose}
         ModalProps={{ keepMounted: true }}
         sx={{
-          display: { xs: 'block', lg: 'none' },
-          '& .MuiDrawer-paper': { width: SIDEBAR_WIDTH },
+          display: { xs: "block", lg: "none" },
+          "& .MuiDrawer-paper": { width: SIDEBAR_WIDTH },
         }}
       >
         {drawerContent(false)}
@@ -534,12 +800,12 @@ const Sidebar = ({ mobileOpen, onMobileClose, desktopOpen, onDesktopToggle }: Si
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: 'none', lg: 'block' },
-          '& .MuiDrawer-paper': {
+          display: { xs: "none", lg: "block" },
+          "& .MuiDrawer-paper": {
             width: currentWidth,
-            boxSizing: 'border-box',
+            boxSizing: "border-box",
             transition: `width ${transitionDuration} ease`,
-            overflowX: 'hidden',
+            overflowX: "hidden",
           },
         }}
         open

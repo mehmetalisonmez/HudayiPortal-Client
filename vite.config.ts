@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -7,19 +7,24 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': {
+      "/api": {
         //target: 'https://localhost:7288',
-        target: 'http://localhost:5252',
+        target: "http://localhost:5252",
         changeOrigin: true,
         secure: false, // Self-signed SSL sertifikası için
       },
-      '/chathub': {
+      "/chathub": {
         //target: 'https://localhost:7288',
-        target: 'http://localhost:5252',
+        target: "http://localhost:5252",
         changeOrigin: true,
         secure: false,
         ws: true, // WebSocket desteği (SignalR)
       },
+      "/uploads": {
+        target: "http://localhost:5252",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
-})
+});
