@@ -1,4 +1,4 @@
-// ──────────────────────────────────────────────
+﻿// ──────────────────────────────────────────────
 // Backend: LoginQuery, LoginResponseDto, RegisterCommand, VerifyEmailCommand
 // ──────────────────────────────────────────────
 
@@ -10,7 +10,9 @@ export interface LoginRequest {
 
 /** POST /api/auth/login — Başarılı yanıt */
 export interface LoginResponse {
-  token: string;
+  token?: string;
+  requiresOtp?: boolean;
+  email?: string;
 }
 
 /** POST /api/auth/register — İstek gövdesi */
@@ -33,3 +35,4 @@ export interface DecodedToken {
   iss: string;
   aud: string;
 }
+

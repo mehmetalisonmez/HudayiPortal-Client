@@ -1,11 +1,4 @@
-// ──────────────────────────────────────────────
-// AuthContext — Uygulama genelinde kimlik doğrulama durumunu yönetir.
-//
-// Sağladığı veriler: user, token, isAuthenticated, role
-// Sağladığı aksiyonlar: login(), logout()
-// ──────────────────────────────────────────────
-
-import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+﻿import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { DecodedToken, LoginRequest, LoginResponse } from '../types';
 import { authService } from '../api/authService';
 import { getToken, setToken, removeToken, parseJwt, isTokenExpired } from '../utils/tokenHelper';
@@ -21,7 +14,9 @@ export interface AuthContextType {
   /** Kullanıcının rolü */
   role: string | null;
   /** Giriş yapma fonksiyonu */
-  login: (credentials: LoginRequest) => Promise<void>;
+  login: (credentials: LoginRequest) => Promise<LoginResponse>;
+  /** OTP doğrulama fonksiyonu */
+  verifyOtp: (email: string, otpCode: string) => Promise<void>;
   /** Çıkış yapma fonksiyonu */
   logout: () => void;
   /** Auth işlemleri sırasında yükleniyor durumu */
@@ -39,7 +34,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [token, setTokenState] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // ─── Uygulama açılışında token kontrolü ────────────
+  // Uygulama açılışında token kontrolü
   useEffect(() => {
     const savedToken = getToken();
     if (savedToken && !isTokenExpired(savedToken)) {
@@ -51,28 +46,53 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         removeToken();
       }
     } else if (savedToken) {
-      // Token süresi dolmuş — temizle
       removeToken();
     }
     setLoading(false);
   }, []);
 
-  // ─── Login ─────────────────────────────────────────
-  const login = useCallback(async (credentials: LoginRequest) => {
+  // Login
+  const login = useCallback(async (credentials: LoginRequest): Promise<LoginResponse> => {
     const response = await authService.login(credentials);
     const data: LoginResponse = response.data;
-    const decoded = parseJwt(data.token);
 
-    if (!decoded) {
-      throw new Error('Geçersiz token alındı.');
+    // Eğer OTP doğrulaması gerekiyorsa, token işlemlerini atlayıp doğrudan veriyi dönelim
+    if (data.requiresOtp) {
+      return data;
     }
 
-    setToken(data.token);
-    setTokenState(data.token);
-    setUser(decoded);
+    if (data.token) {
+      const decoded = parseJwt(data.token);
+      if (!decoded) {
+        throw new Error('Geçersiz token alındı.');
+      }
+      setToken(data.token);
+      setTokenState(data.token);
+      setUser(decoded);
+    }
+
+    return data;
   }, []);
 
-  // ─── Logout ────────────────────────────────────────
+  // OTP Verification
+  const verifyOtp = useCallback(async (email: string, otpCode: string): Promise<void> => {
+    const response = await authService.verifyOtp({ email, otpCode });
+    const data: LoginResponse = response.data;
+
+    if (data.token) {
+      const decoded = parseJwt(data.token);
+      if (!decoded) {
+        throw new Error('Geçersiz token alındı.');
+      }
+      setToken(data.token);
+      setTokenState(data.token);
+      setUser(decoded);
+    } else {
+      throw new Error('Token alınamadı.');
+    }
+  }, []);
+
+  // Logout
   const logout = useCallback(() => {
     removeToken();
     setTokenState(null);
@@ -85,6 +105,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isAuthenticated: !!user,
     role: user?.role ?? null,
     login,
+    verifyOtp,
     logout,
     loading,
   };

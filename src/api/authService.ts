@@ -1,4 +1,4 @@
-// ──────────────────────────────────────────────
+﻿// ──────────────────────────────────────────────
 // Auth API Servisi — Login, Register, Email Doğrulama
 // ──────────────────────────────────────────────
 
@@ -15,7 +15,12 @@ export const authService = {
   register: (data: RegisterRequest) =>
     api.post<number>(API.AUTH.REGISTER, data),
 
+  /** OTP dorulama  JWT token dner */
+  verifyOtp: (data: { email: string; otpCode: string }) =>
+    api.post<LoginResponse>('/auth/verify-otp', data),
+
   /** Email doğrulama → Token ile GET isteği */
   verifyEmail: (token: string) =>
     api.get(API.AUTH.VERIFY_EMAIL, { params: { token } }),
 };
+
