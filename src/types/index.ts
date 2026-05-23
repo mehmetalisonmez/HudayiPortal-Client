@@ -19,3 +19,4 @@ export * from "./yemekYorum";
 export * from "./personelNobet";
 export * from "./sohbet";
 export * from "./mesaj";
+export * from "./chat";

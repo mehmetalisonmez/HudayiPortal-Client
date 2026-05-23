@@ -29,6 +29,7 @@ import FinansDashboardPage from "../pages/FinansDashboard/FinansDashboardPage";
 import EtkinlikYonetimiPage from "../pages/EtkinlikYonetimi/EtkinlikYonetimiPage";
 import NobetYonetimiPage from "../pages/NobetYonetimi/NobetYonetimiPage";
 import NobetlerimPage from "../pages/Nobetlerim/NobetlerimPage";
+import ChatPage from "../pages/Chat/ChatPage";
 
 // Components
 import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
           {
             path: "/finans-dashboard",
             element: <FinansDashboardPage />,
+          },
+          {
+            path: "/mesajlar",
+            element: <ChatPage />,
           },
         ],
       },
