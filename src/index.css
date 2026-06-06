@@ -80,3 +80,81 @@ svg {
   display: block;
   max-width: 100%;
 }
+
+/* ─── React Big Calendar Dark Theme Overrides ─── */
+.rbc-calendar {
+  color: #F1F5F9 !important;
+}
+
+.rbc-month-view {
+  border: 1px solid rgba(148, 163, 184, 0.15) !important;
+  background-color: #1E293B !important; /* Slate 800 */
+}
+
+.rbc-header {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15) !important;
+  color: #94A3B8 !important; /* Slate 400 */
+  padding: 8px 0 !important;
+}
+
+.rbc-header + .rbc-header {
+  border-left: 1px solid rgba(148, 163, 184, 0.15) !important;
+}
+
+.rbc-month-row {
+  border-top: 1px solid rgba(148, 163, 184, 0.15) !important;
+}
+
+.rbc-day-bg {
+  background-color: transparent !important;
+}
+
+.rbc-day-bg + .rbc-day-bg {
+  border-left: 1px solid rgba(148, 163, 184, 0.15) !important;
+}
+
+.rbc-today {
+  background-color: rgba(99, 102, 241, 0.12) !important; /* Indigo with transparency */
+}
+
+.rbc-off-range-bg {
+  background-color: rgba(15, 23, 42, 0.45) !important; /* Dark Slate background */
+}
+
+/* Toolbar & Buttons */
+.rbc-toolbar button {
+  color: #F1F5F9 !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  background-color: rgba(30, 41, 59, 0.5) !important;
+  border-radius: 6px !important;
+  padding: 5px 12px !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.rbc-toolbar button:hover {
+  background-color: rgba(99, 102, 241, 0.15) !important;
+  border-color: #6366F1 !important;
+}
+
+.rbc-toolbar button:active,
+.rbc-toolbar button.rbc-active {
+  background-color: #6366F1 !important;
+  border-color: #6366F1 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3) !important;
+}
+
+.rbc-toolbar button.rbc-active:hover {
+  background-color: #4338CA !important;
+  border-color: #4338CA !important;
+}
+
+.rbc-show-more {
+  color: #6366F1 !important;
+  font-weight: 600 !important;
+  background-color: transparent !important;
+}
+

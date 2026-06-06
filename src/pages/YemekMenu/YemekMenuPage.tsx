@@ -445,6 +445,16 @@ const YemekMenuPage = () => {
     setFormDialogOpen(true);
   };
 
+  const handleOpenCreateForDate = (tarih: string, ogunTuruId: number) => {
+    setEditingItem(null);
+    setFormData({
+      ...INITIAL_FORM,
+      tarih,
+      ogunTuruId,
+    });
+    setFormDialogOpen(true);
+  };
+
   const handleOpenEdit = (item: YemekMenuDto) => {
     setEditingItem(item);
     setFormData({
@@ -945,75 +955,100 @@ const YemekMenuPage = () => {
                               gap: 1,
                             }}
                           >
-                            {[row.kahvalti, row.aksam]
-                              .filter(Boolean)
-                              .map((item) => (
-                                <Box
-                                  key={item!.id}
+                            {row.kahvalti && (
+                              <Box key={row.kahvalti.id} sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
+                                <Chip
+                                  label="Kahvaltı"
+                                  size="small"
+                                  color="warning"
+                                  sx={{ fontSize: "0.62rem", height: 20, "& .MuiChip-label": { px: 0.5 } }}
+                                />
+                                <Tooltip title="Düzenle">
+                                  <IconButton size="small" onClick={() => handleOpenEdit(row.kahvalti!)} sx={{ color: "text.secondary", p: 0.25, "&:hover": { color: "info.main", backgroundColor: (t) => alpha(t.palette.info.main, 0.1) } }}>
+                                    <EditOutlined sx={{ fontSize: 15 }} />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Sil">
+                                  <IconButton size="small" onClick={() => handleOpenDelete(row.kahvalti!)} sx={{ color: "text.secondary", p: 0.25, "&:hover": { color: "error.main", backgroundColor: (t) => alpha(t.palette.error.main, 0.1) } }}>
+                                    <DeleteOutlined sx={{ fontSize: 15 }} />
+                                  </IconButton>
+                                </Tooltip>
+                              </Box>
+                            )}
+
+                            {row.aksam && (
+                              <Box key={row.aksam.id} sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
+                                <Chip
+                                  label="Akşam"
+                                  size="small"
+                                  color="info"
+                                  sx={{ fontSize: "0.62rem", height: 20, "& .MuiChip-label": { px: 0.5 } }}
+                                />
+                                <Tooltip title="Düzenle">
+                                  <IconButton size="small" onClick={() => handleOpenEdit(row.aksam!)} sx={{ color: "text.secondary", p: 0.25, "&:hover": { color: "info.main", backgroundColor: (t) => alpha(t.palette.info.main, 0.1) } }}>
+                                    <EditOutlined sx={{ fontSize: 15 }} />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Sil">
+                                  <IconButton size="small" onClick={() => handleOpenDelete(row.aksam!)} sx={{ color: "text.secondary", p: 0.25, "&:hover": { color: "error.main", backgroundColor: (t) => alpha(t.palette.error.main, 0.1) } }}>
+                                    <DeleteOutlined sx={{ fontSize: 15 }} />
+                                  </IconButton>
+                                </Tooltip>
+                              </Box>
+                            )}
+
+                            {!row.kahvalti && (
+                              <Tooltip title="Kahvaltı Ekle">
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  color="warning"
+                                  onClick={() => handleOpenCreateForDate(row.tarih, 1)}
                                   sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 0.25,
+                                    fontSize: "0.65rem",
+                                    py: 0,
+                                    px: 1,
+                                    minWidth: 0,
+                                    height: 20,
+                                    textTransform: "none",
+                                    borderRadius: "4px",
+                                    borderColor: (t) => alpha(t.palette.warning.main, 0.4),
+                                    "&:hover": {
+                                      borderColor: "warning.main",
+                                      backgroundColor: (t) => alpha(t.palette.warning.main, 0.08),
+                                    }
                                   }}
                                 >
-                                  <Chip
-                                    label={getOgunLabel(item!.ogunTuruId)}
-                                    size="small"
-                                    color={
-                                      getOgunColor(item!.ogunTuruId) as
-                                        | "warning"
-                                        | "success"
-                                        | "info"
+                                  + Kahvaltı
+                                </Button>
+                              </Tooltip>
+                            )}
+
+                            {!row.aksam && (
+                              <Tooltip title="Akşam Ekle">
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  color="info"
+                                  onClick={() => handleOpenCreateForDate(row.tarih, 3)}
+                                  sx={{
+                                    fontSize: "0.65rem",
+                                    py: 0,
+                                    px: 1,
+                                    minWidth: 0,
+                                    height: 20,
+                                    textTransform: "none",
+                                    borderRadius: "4px",
+                                    borderColor: (t) => alpha(t.palette.info.main, 0.4),
+                                    "&:hover": {
+                                      borderColor: "info.main",
+                                      backgroundColor: (t) => alpha(t.palette.info.main, 0.08),
                                     }
-                                    sx={{
-                                      fontSize: "0.62rem",
-                                      height: 20,
-                                      "& .MuiChip-label": { px: 0.5 },
-                                    }}
-                                  />
-                                  <Tooltip title="Düzenle">
-                                    <IconButton
-                                      size="small"
-                                      onClick={() => handleOpenEdit(item!)}
-                                      sx={{
-                                        color: "text.secondary",
-                                        p: 0.25,
-                                        "&:hover": {
-                                          color: "info.main",
-                                          backgroundColor: (t) =>
-                                            alpha(t.palette.info.main, 0.1),
-                                        },
-                                      }}
-                                    >
-                                      <EditOutlined sx={{ fontSize: 15 }} />
-                                    </IconButton>
-                                  </Tooltip>
-                                  <Tooltip title="Sil">
-                                    <IconButton
-                                      size="small"
-                                      onClick={() => handleOpenDelete(item!)}
-                                      sx={{
-                                        color: "text.secondary",
-                                        p: 0.25,
-                                        "&:hover": {
-                                          color: "error.main",
-                                          backgroundColor: (t) =>
-                                            alpha(t.palette.error.main, 0.1),
-                                        },
-                                      }}
-                                    >
-                                      <DeleteOutlined sx={{ fontSize: 15 }} />
-                                    </IconButton>
-                                  </Tooltip>
-                                </Box>
-                              ))}
-                            {mealIds.length === 0 && (
-                              <Typography
-                                variant="caption"
-                                sx={{ color: "text.disabled" }}
-                              >
-                                —
-                              </Typography>
+                                  }}
+                                >
+                                  + Akşam
+                                </Button>
+                              </Tooltip>
                             )}
                           </Box>
                         </TableCell>
@@ -1069,7 +1104,7 @@ const YemekMenuPage = () => {
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, tarih: e.target.value }))
               }
-              disabled={submitting}
+              disabled={submitting || !!editingItem}
               slotProps={{ inputLabel: { shrink: true } }}
             />
 
@@ -1097,7 +1132,7 @@ const YemekMenuPage = () => {
                     }),
                   }));
                 }}
-                disabled={submitting}
+                disabled={submitting || !!editingItem}
               >
                 <MenuItem value={1}>Kahvaltı</MenuItem>
                 <MenuItem value={3}>Akşam Yemeği</MenuItem>
